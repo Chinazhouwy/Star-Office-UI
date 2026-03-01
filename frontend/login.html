@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦞 OpenClaw 办公室 - 登录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 350px;
+        }
+        .login-box h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .login-box p {
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1em;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: #000;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .error {
+            color: #ef4444;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🦞 OpenClaw</h1>
+        <p>办公室状态看板</p>
+        
+        <div class="input-group">
+            <label>账 号</label>
+            <input type="text" id="username" placeholder="请输入账号">
+        </div>
+        
+        <div class="input-group">
+            <label>密 码</label>
+            <input type="password" id="password" placeholder="请输入密码">
+        </div>
+        
+        <button class="btn" onclick="doLogin()">登 录</button>
+        
+        <p class="error" id="errorMsg">账号或密码错误</p>
+    </div>
+
+    <script>
+        const USERNAME = 'zhouwweiyang';
+        const PASSWORD = 'ho5pYTw05HORrrl0hDF2Jg==';
+        
+        function doLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            
+            if (user === USERNAME && pass === PASSWORD) {
+                // 登录成功，保存密码到 localStorage
+                localStorage.setItem('office_token', PASSWORD);
+                // 跳转到主页
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+        
+        // 回车登录
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') doLogin();
+        });
+    </script>
+</body>
+</html>

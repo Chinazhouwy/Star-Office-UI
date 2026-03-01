@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦞 OpenClaw 办公室</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a4a6a;
+        }
+        .header h1 { font-size: 2em; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .status-panel, .memo-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .status-panel h2 { color: #ffd700; margin-bottom: 15px; }
+        .memo-panel h2 { color: #4ade80; margin-bottom: 15px; }
+        .status-display { display: flex; align-items: center; gap: 20px; }
+        .agent-avatar {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
+        }
+        .status-badge {
+            display: inline-block; padding: 5px 15px;
+            border-radius: 20px; font-size: 0.9em; margin-top: 10px;
+        }
+        .status-idle { background: #4ade80; color: #000; }
+        .status-writing { background: #60a5fa; color: #000; }
+        .status-executing { background: #f472b6; color: #000; }
+        .status-researching { background: #a78bfa; color: #000; }
+        .status-syncing { background: #fbbf24; color: #000; }
+        .status-error { background: #ef4444; color: #fff; }
+        .memo-content {
+            background: rgba(0,0,0,0.3); padding: 15px;
+            border-radius: 10px; line-height: 1.6; white-space: pre-wrap;
+        }
+        .office-scene {
+            background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 100%);
+            height: 300px; border-radius: 15px;
+            position: relative; overflow: hidden; margin: 20px 0;
+        }
+        .pixel-agent {
+            position: absolute; bottom: 50px; left: 50%;
+            transform: translateX(-50%); font-size: 60px;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        .logout {
+            position: fixed; top: 20px; right: 20px;
+            padding: 10px 20px; background: rgba(255,255,255,0.2);
+            border-radius: 10px; cursor: pointer;
+        }
+        .logout:hover { background: rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <div class="logout" onclick="logout()">退出登录</div>
+
+    <div class="header">
+        <h1>🦞 OpenClaw 办公室</h1>
+        <p>AI 助手工作状态看板</p>
+    </div>
+
+    <div class="container">
+        <div class="office-scene">
+            <div class="pixel-agent" id="agentSprite">🦞</div>
+        </div>
+
+        <div class="status-panel">
+            <h2>📊 当前状态</h2>
+            <div class="status-display">
+                <div class="agent-avatar">🦞</div>
+                <div class="agent-info">
+                    <h3>OpenClaw</h3>
+                    <p id="statusMessage">Ready</p>
+                    <span id="statusBadge" class="status-badge status-idle">idle</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="memo-panel">
+            <h2>📝 昨日小记</h2>
+            <div class="memo-content" id="memoContent">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        
+        const statusEmoji = {
+            'idle': '💤', 'writing': '✍️', 'executing': '⚡',
+            'researching': '🔍', 'syncing': '🔄', 'error': '❌'
+        };
+
+        function logout() {
+            localStorage.removeItem('office_token');
+            window.location.href = 'login.html';
+        }
+
+        async function loadStatus() {
+            try {
+                const resp = await fetch(API_BASE + '/status');
+                const data = await resp.json();
+                const status = data.status || 'idle';
+                document.getElementById('statusMessage').textContent = data.message || 'Ready';
+                document.getElementById('statusBadge').textContent = status;
+                document.getElementById('statusBadge').className = 'status-badge status-' + status;
+                document.getElementById('agentSprite').textContent = statusEmoji[status] || '🦞';
+            } catch(e) { console.error('加载状态失败:', e); }
+        }
+
+        async function loadMemo() {
+            try {
+                const resp = await fetch(API_BASE + '/yesterday_memo');
+                const data = await resp.json();
+                document.getElementById('memoContent').textContent = data.memo || '暂无记录';
+            } catch(e) { document.getElementById('memoContent').textContent = '加载失败'; }
+        }
+
+        // 检查登录
+        const token = localStorage.getItem('office_token');
+        if (!token) {
+            window.location.href = 'login.html';
+        } else {
+            loadStatus();
+            loadMemo();
+            setInterval(() => { loadStatus(); loadMemo(); }, 10000);
+        }
+    </script>
+</body>
+</html>

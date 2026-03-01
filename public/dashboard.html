@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Office - 控制台</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: white;
+      --text: #1e293b;
+      --text-light: #64748b;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    
+    /* 顶部导航 */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-info span {
+      font-size: 14px;
+    }
+    
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    /* 侧边栏 */
+    .container {
+      display: flex;
+      min-height: calc(100vh - 60px);
+    }
+    
+    .sidebar {
+      width: 220px;
+      background: var(--card-bg);
+      padding: 20px 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    }
+    
+    .nav-item {
+      padding: 12px 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-light);
+      transition: all 0.3s;
+    }
+    
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+    
+    .nav-icon {
+      font-size: 18px;
+    }
+    
+    /* 主内容区 */
+    .main {
+      flex: 1;
+      padding: 25px;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: var(--text);
+    }
+    
+    /* 统计卡片 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+    
+    .stat-icon.blue { background: #e0f2fe; color: #0284c7; }
+    .stat-icon.green { background: #d1fae5; color: #059669; }
+    .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+    .stat-icon.orange { background: #ffedd5; color: #ea580c; }
+    
+    .stat-info h3 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    
+    .stat-info p {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    
+    /* 内容卡片 */
+    .content-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    /* 按钮 */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    /* 表格 */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table th,
+    .data-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .data-table th {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+    
+    .data-table tr:hover {
+      background: #f8fafc;
+    }
+    
+    /* 状态标签 */
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status-badge.running {
+      background: #d1fae5;
+      color: #059669;
+    }
+    
+    .status-badge.stopped {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    
+    /* 表单 */
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    /* 加载动画 */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* 实时状态 */
+    .realtime-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .rt-stat {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .rt-stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .rt-stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 5px;
+    }
+    
+    /* 隐藏页面 */
+    .page {
+      display: none;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    /* 控制台输出 */
+    .console-output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 13px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    /* 对话框 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">🦞 Star Office</span>
+    </div>
+    <div class="user-info">
+      <span id="currentUser">Admin</span>
+      <button class="logout-btn" onclick="logout()">退出登录</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="nav-item active" data-page="overview">
+        <span class="nav-icon">📊</span>
+        <span>概览</span>
+      </div>
+      <div class="nav-item" data-page="status">
+        <span class="nav-icon">🔔</span>
+        <span>系统状态</span>
+      </div>
+      <div class="nav-item" data-page="robots">
+        <span class="nav-icon">🤖</span>
+        <span>机器人管理</span>
+      </div>
+      <div class="nav-item" data-page="agents">
+        <span class="nav-icon">🧠</span>
+        <span>多智能体</span>
+      </div>
+      <div class="nav-item" data-page="tasks">
+        <span class="nav-icon">⏰</span>
+        <span>定时任务</span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <span class="nav-icon">⚙️</span>
+        <span>设置</span>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main">
+      <!-- 概览页面 -->
+      <div class="page active" id="page-overview">
+        <h2 class="page-title">📊 系统概览</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">🤖</div>
+            <div class="stat-info">
+              <h3 id="statRobots">-</h3>
+              <p>活跃机器人</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div class="stat-info">
+              <h3 id="statTasks">-</h3>
+              <p>定时任务</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">🧠</div>
+            <div class="stat-info">
+              <h3 id="statAgents">-</h3>
+              <p>Agent 实例</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">💻</div>
+            <div class="stat-info">
+              <h3 id="statCPU">-</h3>
+              <p>CPU 使用率</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">🚀 快速操作</h3>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="showCreateRobot()">+ 新建机器人</button>
+            <button class="btn btn-primary" onclick="showSpawnAgent()">+ 启动 Agent 任务</button>
+            <button class="btn btn-primary" onclick="refreshAll()">🔄 刷新数据</button>
+          </div>
+        </div>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">💻 系统资源</h3>
+          </div>
+          <div class="realtime-stats" id="resourceStats">
+            <div class="rt-stat">
+              <div class="rt-stat-value" id="cpuUsage">-%</div>
+              <div class="rt-stat-label">CPU 使用率</div>
+            </div>
+            <div class="rt-stat">
+              <div class="rt-stat-value" id="memUsage">-%</div>
+              <div class="rt-stat-label">内存使用</div>
+            </div>
+            <div class="rt-stat">
+              <div class="rt-stat-value" id="diskUsage">-%</div>
+              <div class="rt-stat-label">磁盘使用</div>
+            </div>
+            <div class="rt-stat">
+              <div class="rt-stat-value" id="uptime">-</div>
+              <div class="rt-stat-label">运行时间</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 系统状态页面 -->
+      <div class="page" id="page-status">
+        <h2 class="page-title">🔔 系统状态</h2>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">OpenClaw 状态</h3>
+            <button class="btn btn-primary" onclick="loadOpenClawStatus()">🔄 刷新</button>
+          </div>
+          <div class="console-output" id="openclawStatus">
+            <div class="loading"><div class="spinner"></div>加载中...</div>
+          </div>
+        </div>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">当前会话</h3>
+          </div>
+          <div id="sessionsList">
+            <div class="loading"><div class="spinner"></div>加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 机器人管理页面 -->
+      <div class="page" id="page-robots">
+        <h2 class="page-title">🤖 机器人管理</h2>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">机器人列表</h3>
+            <button class="btn btn-primary" onclick="showCreateRobot()">+ 新建机器人</button>
+          </div>
+          <div id="robotsList">
+            <div class="loading"><div class="spinner"></div>加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 多智能体页面 -->
+      <div class="page" id="page-agents">
+        <h2 class="page-title">🧠 多智能体协作</h2>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">启动新任务</h3>
+          </div>
+          <div class="form-group">
+            <label>任务描述</label>
+            <textarea id="agentTask" rows="4" placeholder="描述您要执行的任务..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>选择 Agent</label>
+              <select id="agentSelect">
+                <option value="">默认 Agent</option>
+                <option value="investment">Investment Agent</option>
+                <option value="code">Code Agent</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>模型</label>
+              <select id="modelSelect">
+                <option value="bailian/qwen3.5-plus">Qwen 3.5 Plus</option>
+                <option value="bailian/qwen3-max-2026-01-23">Qwen 3 Max</option>
+                <option value="bailian/qwen3-coder-plus">Qwen Coder Plus</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="spawnAgent()">🚀 执行任务</button>
+        </div>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">任务输出</h3>
+          </div>
+          <div class="console-output" id="agentOutput">
+            等待执行任务...
+          </div>
+        </div>
+      </div>
+
+      <!-- 定时任务页面 -->
+      <div class="page" id="page-tasks">
+        <h2 class="page-title">⏰ 定时任务</h2>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">任务列表</h3>
+            <button class="btn btn-primary" onclick="loadTasks()">🔄 刷新</button>
+          </div>
+          <div id="tasksList">
+            <div class="loading"><div class="spinner"></div>加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 设置页面 -->
+      <div class="page" id="page-settings">
+        <h2 class="page-title">⚙️ 设置</h2>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">账户设置</h3>
+          </div>
+          <div class="form-group">
+            <label>新密码</label>
+            <input type="password" id="newPassword" placeholder="输入新密码">
+          </div>
+          <div class="form-group">
+            <label>确认密码</label>
+            <input type="password" id="confirmPassword" placeholder="再次输入新密码">
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">修改密码</button>
+        </div>
+        
+        <div class="content-card">
+          <div class="card-header">
+            <h3 class="card-title">Git 远程仓库</h3>
+          </div>
+          <div class="form-group">
+            <label>远程仓库 URL</label>
+            <input type="text" id="gitRemote" value="git@github.com:Chinazhouwy/Star-Office-UI.git" readonly>
+          </div>
+          <button class="btn btn-primary" onclick="initGit()">📤 初始化 Git 并推送</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 新建机器人对话框 -->
+  <div class="modal" id="createRobotModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">新建机器人</h3>
+        <button class="modal-close" onclick="closeModal('createRobotModal')">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>机器人名称</label>
+        <input type="text" id="robotName" placeholder="输入机器人名称">
+      </div>
+      <div class="form-group">
+        <label>模型</label>
+        <select id="robotModel">
+          <option value="bailian/qwen3.5-plus">Qwen 3.5 Plus</option>
+          <option value="bailian/qwen3-max-2026-01-23">Qwen 3 Max</option>
+          <option value="bailian/qwen3-coder-plus">Qwen Coder Plus</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>描述</label>
+        <textarea id="robotDesc" rows="3" placeholder="机器人描述（可选）"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('createRobotModal')">取消</button>
+        <button class="btn btn-primary" onclick="createRobot()">创建</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

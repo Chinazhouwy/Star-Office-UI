@@ -1,0 +1,12 @@
+🌟 Star Office UI 后端启动中...
+   端口: 18888
+   Token: openclaw2026
+   访问: http://localhost:18888
+   公网访问: https://zhouwy.top/office (需配置nginx)
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:18888
+ * Running on http://10.2.0.2:18888
+[33mPress CTRL+C to quit[0m

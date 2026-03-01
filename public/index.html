@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star Office - 登录</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-logo h1 {
+      font-size: 32px;
+      color: #667eea;
+      margin: 0;
+    }
+    .login-logo p {
+      color: #666;
+      margin: 5px 0 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .error-msg {
+      background: #fee;
+      color: #c00;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .lobster-icon {
+      font-size: 60px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-logo">
+        <div class="lobster-icon">🦞</div>
+        <h1>Star Office</h1>
+        <p>OpenClaw 管理控制台</p>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" name="username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn" id="loginBtn">登 录</button>
+      </form>
+      <p style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+        默认账号: admin | 密码: staroffice2026
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '';
+    
+    // 检查是否已登录
+    async function checkAuth() {
+      try {
+        const res = await fetch(API_BASE + '/api/auth/status');
+        const data = await res.json();
+        if (data.loggedIn) {
+          window.location.href = '/dashboard.html';
+        }
+      } catch (e) {
+        console.error('检查登录状态失败:', e);
+      }
+    }
+    
+    checkAuth();
+    
+    // 登录表单提交
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('loginBtn');
+      const errorMsg = document.getElementById('errorMsg');
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      btn.disabled = true;
+      btn.textContent = '登录中...';
+      errorMsg.style.display = 'none';
+      
+      try {
+        const res = await fetch(API_BASE + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          // 保存 token 到 localStorage
+          localStorage.setItem('star_token', data.token);
+          localStorage.setItem('star_user', JSON.stringify(data.user));
+          window.location.href = '/dashboard.html';
+        } else {
+          errorMsg.textContent = data.error || '登录失败';
+          errorMsg.style.display = 'block';
+        }
+      } catch (error) {
+        errorMsg.textContent = '网络错误，请稍后重试';
+        errorMsg.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '登 录';
+      }
+    });
+  </script>
+</body>
+</html>
