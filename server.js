@@ -25,7 +25,7 @@ const { exec } = require('child_process');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = process.env.PORT || 8889;
+const PORT = process.env.PORT || 18892;
 
 // ============================================================================
 // 配置区域
