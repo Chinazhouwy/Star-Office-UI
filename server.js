@@ -56,6 +56,10 @@ const CONFIG = {
 // Express 中间件配置
 // ============================================================================
 
+// 信任反向代理（nginx）- 必须设置在 rate-limit 之前
+// 这样 X-Forwarded-For 头才会被正确识别
+app.set('trust proxy', true);
+
 // CORS 配置 - 允许跨域请求
 // 生产环境可以限制具体的域名
 app.use(cors({
@@ -85,9 +89,12 @@ app.use(express.static(path.join(__dirname, 'public')));
  *   - 超过限制返回 429 状态码
  */
 const limiter = rateLimit({
+  standardHeaders: true,
+  legacyHeaders: false,
   windowMs: 15 * 60 * 1000, // 15分钟窗口
   max: 100, // 最多 100 次请求
-  message: { error: '请求过于频繁，请稍后再试' }
+  message: { error: '请求过于频繁，请稍后再试' },
+  validate: { xForwardedForHeader: false }
 });
 
 // 对所有 /api/ 开头的路由应用速率限制
@@ -288,7 +295,8 @@ app.get('/api/auth/status', (req, res) => {
  */
 app.get('/api/openclaw/status', requireAuth, async (req, res) => {
   try {
-    const statusOutput = await execAsync('openclaw status 2>&1');
+    // 增加超时时间到 30 秒，并使用 timeout 命令防止挂起
+    const statusOutput = await execAsync('timeout 25 openclaw status 2>&1', 30000);
     
     const status = {
       raw: statusOutput,
@@ -313,7 +321,7 @@ app.get('/api/openclaw/status', requireAuth, async (req, res) => {
  */
 app.get('/api/openclaw/sessions', requireAuth, async (req, res) => {
   try {
-    const output = await execAsync('openclaw sessions list --json 2>&1');
+    const output = await execAsync('timeout 20 openclaw sessions --json 2>&1', 25000);
     let sessions = [];
     try {
       sessions = JSON.parse(output);
@@ -337,7 +345,7 @@ app.get('/api/openclaw/sessions', requireAuth, async (req, res) => {
  */
 app.get('/api/openclaw/tasks', requireAuth, async (req, res) => {
   try {
-    const output = await execAsync('openclaw cron list 2>&1');
+    const output = await execAsync('timeout 20 openclaw cron list 2>&1', 25000);
     res.json({ success: true, data: output });
   } catch (error) {
     res.status(500).json({ error: '获取任务失败', detail: error.message });
@@ -351,7 +359,7 @@ app.get('/api/openclaw/tasks', requireAuth, async (req, res) => {
  */
 app.get('/api/openclaw/models', requireAuth, async (req, res) => {
   try {
-    const output = await execAsync('openclaw models list 2>&1');
+    const output = await execAsync('timeout 20 openclaw models list 2>&1', 25000);
     res.json({ success: true, data: output });
   } catch (error) {
     res.status(500).json({ error: '获取模型失败', detail: error.message });
@@ -467,7 +475,7 @@ app.post('/api/robots/create', requireAuth, async (req, res) => {
  */
 app.get('/api/robots/list', requireAuth, async (req, res) => {
   try {
-    const sessions = await execAsync('openclaw sessions list 2>&1');
+    const sessions = await execAsync('openclaw sessions 2>&1');
     
     let robots = [];
     try {

@@ -13,3 +13,12 @@
 ║                                                   ║
 ╚═══════════════════════════════════════════════════╝
   
+ValidationError: The Express 'trust proxy' setting is true, which allows anyone to trivially bypass IP-based rate limiting. See https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/ for more information.
+    at Object.trustProxy (/root/.openclaw/workspace/star-office-ui/node_modules/express-rate-limit/dist/index.cjs:167:13)
+    at wrappedValidations.<computed> [as trustProxy] (/root/.openclaw/workspace/star-office-ui/node_modules/express-rate-limit/dist/index.cjs:397:22)
+    at Object.keyGenerator (/root/.openclaw/workspace/star-office-ui/node_modules/express-rate-limit/dist/index.cjs:657:20)
+    at /root/.openclaw/workspace/star-office-ui/node_modules/express-rate-limit/dist/index.cjs:710:32
+    at async /root/.openclaw/workspace/star-office-ui/node_modules/express-rate-limit/dist/index.cjs:691:5 {
+  code: 'ERR_ERL_PERMISSIVE_TRUST_PROXY',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/'
+}
